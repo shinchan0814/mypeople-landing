@@ -1,13 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, CheckCircle, Users, Sparkles, ArrowRight, Heart } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 export default function Waitlist() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [waitlistCount, setWaitlistCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchWaitlistCount() {
+      const { count } = await supabase
+        .from('waitlist')
+        .select('*', { count: 'exact', head: true });
+
+      if (count !== null) {
+        setWaitlistCount(count);
+      }
+    }
+    fetchWaitlistCount();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,12 +35,36 @@ export default function Waitlist() {
 
     setStatus('loading');
 
-    // Simulate API call - Replace with your actual waitlist API
-    setTimeout(() => {
+    try {
+      const { error } = await supabase
+        .from('waitlist')
+        .insert([
+          {
+            email: email.toLowerCase().trim(),
+            source: 'landing_page',
+            status: 'pending',
+          },
+        ]);
+
+      if (error) {
+        if (error.code === '23505') {
+          setStatus('error');
+          setMessage('This email is already on the waitlist!');
+        } else {
+          setStatus('error');
+          setMessage('Something went wrong. Please try again.');
+        }
+        return;
+      }
+
       setStatus('success');
-      setMessage('You\'re on the list! We\'ll notify you when we launch.');
+      setMessage("You're on the list! We'll notify you when we launch.");
       setEmail('');
-    }, 1500);
+      setWaitlistCount((prev) => prev + 1);
+    } catch {
+      setStatus('error');
+      setMessage('Something went wrong. Please try again.');
+    }
   };
 
   return (
@@ -169,7 +208,9 @@ export default function Waitlist() {
             </div>
             <div className="flex items-center gap-2 text-white/80">
               <Users className="w-5 h-5" />
-              <span className="font-medium">500+ people already waiting</span>
+              <span className="font-medium">
+                {waitlistCount > 0 ? `${waitlistCount}+ people already waiting` : 'Be among the first to join'}
+              </span>
             </div>
           </motion.div>
 
