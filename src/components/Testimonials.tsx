@@ -2,29 +2,27 @@
 
 import { motion } from 'framer-motion';
 import { Star, Quote, Shield, Lock, Heart } from 'lucide-react';
+import Image from 'next/image';
 
 const testimonials = [
   {
     name: 'Sarah K.',
     role: 'Working Mom',
-    avatar: 'S',
-    color: 'from-[#F7DDE2] to-[#A5B4FC]',
+    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face',
     content: 'Finally, an app that gets it. I share my kids\' moments with just my parents and sister. No strangers, no judgment.',
     rating: 5,
   },
   {
     name: 'Mike T.',
     role: 'Living Abroad',
-    avatar: 'M',
-    color: 'from-[#6366F1] to-[#A5B4FC]',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
     content: 'Being 10,000 miles from family was hard. MyPeople makes me feel like I\'m still there for dinner every night.',
     rating: 5,
   },
   {
     name: 'Priya S.',
     role: 'Best Friend Group',
-    avatar: 'P',
-    color: 'from-[#A5B4FC] to-[#6366F1]',
+    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=100&h=100&fit=crop&crop=face',
     content: 'Our group of 6 has been friends for 15 years. This app is like our private club. Love the simplicity.',
     rating: 5,
   },
@@ -84,8 +82,13 @@ export default function Testimonials() {
 
                 {/* Author */}
                 <div className="flex items-center gap-4">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${testimonial.color} flex items-center justify-center`}>
-                    <span className="text-white font-bold text-lg">{testimonial.avatar}</span>
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-[#E2E8F0]">
+                    <Image
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                   <div>
                     <div className="font-semibold text-[#0F172A]">{testimonial.name}</div>

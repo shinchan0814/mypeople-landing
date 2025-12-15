@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { UserPlus, Camera, Send, Heart } from 'lucide-react';
+import { UserPlus, Camera, Heart } from 'lucide-react';
 
 const steps = [
   {
@@ -16,19 +16,12 @@ const steps = [
   {
     number: '02',
     icon: Camera,
-    title: 'Capture Moments',
-    description: 'Take photos or videos of your daily life. The little moments that matter.',
+    title: 'Share Moments',
+    description: 'Capture and share photos or videos instantly. Your people see it immediately in their feed.',
     color: 'from-[#A5B4FC] to-[#6366F1]',
   },
   {
     number: '03',
-    icon: Send,
-    title: 'Share Instantly',
-    description: 'Share with one tap. Your people see it immediately in their feed.',
-    color: 'from-[#6366F1] to-[#818CF8]',
-  },
-  {
-    number: '04',
     icon: Heart,
     title: 'Stay Connected',
     description: 'Chat, react, and keep the conversation going. Feel closer, always.',
@@ -60,7 +53,7 @@ export default function HowItWorks() {
           className="text-center mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-[#0F172A] mb-6">
-            Simple as <span className="gradient-text">1, 2, 3, 4</span>
+            Simple as <span className="gradient-text">1, 2, 3</span>
           </h2>
           <p className="text-xl text-[#334155] max-w-2xl mx-auto">
             Getting started takes less than a minute. Here's how it works.
@@ -72,7 +65,7 @@ export default function HowItWorks() {
           {/* Connection Line */}
           <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-[#6366F1]/20 via-[#A5B4FC]/40 to-[#F7DDE2]/20 -translate-y-1/2" />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             {steps.map((step, index) => (
               <motion.div
                 key={step.number}
