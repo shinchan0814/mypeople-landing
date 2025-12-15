@@ -167,7 +167,7 @@ export default function Waitlist() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="max-w-md mx-auto"
+            className="max-w-xl mx-auto"
           >
             {status === 'success' ? (
               <motion.div
@@ -183,25 +183,30 @@ export default function Waitlist() {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="relative">
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative flex-1">
-                      <div className="flex bg-white rounded-xl overflow-hidden border-2 border-transparent focus-within:border-[#6366F1] transition-colors">
-                        {/* Country Code Selector */}
-                        <div className="relative">
-                          <button
-                            type="button"
-                            onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                            className="flex items-center gap-1 px-3 py-4 bg-gray-50 border-r border-gray-200 hover:bg-gray-100 transition-colors"
-                          >
-                            <span className="text-xl">{selectedCountry.flag}</span>
-                            <span className="text-[#0F172A] font-medium">{selectedCountry.code}</span>
-                            <ChevronDown className="w-4 h-4 text-[#64748B]" />
-                          </button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="relative flex-1">
+                    <div className="flex bg-white rounded-2xl border-2 border-transparent focus-within:border-[#6366F1] transition-colors shadow-lg">
+                      {/* Country Code Selector */}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                          className="flex items-center gap-2 px-4 py-5 bg-gray-50 rounded-l-2xl border-r border-gray-200 hover:bg-gray-100 transition-colors min-w-[120px]"
+                        >
+                          <span className="text-2xl">{selectedCountry.flag}</span>
+                          <span className="text-[#0F172A] font-semibold text-lg">{selectedCountry.code}</span>
+                          <ChevronDown className={`w-5 h-5 text-[#64748B] transition-transform ${showCountryDropdown ? 'rotate-180' : ''}`} />
+                        </button>
 
-                          {/* Dropdown */}
-                          {showCountryDropdown && (
-                            <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-60 overflow-y-auto">
+                        {/* Dropdown */}
+                        {showCountryDropdown && (
+                          <>
+                            {/* Backdrop to close dropdown when clicking outside */}
+                            <div
+                              className="fixed inset-0 z-40"
+                              onClick={() => setShowCountryDropdown(false)}
+                            />
+                            <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 max-h-72 overflow-y-auto">
                               {countryCodes.map((country) => (
                                 <button
                                   key={country.code}
@@ -210,50 +215,50 @@ export default function Waitlist() {
                                     setSelectedCountry(country);
                                     setShowCountryDropdown(false);
                                   }}
-                                  className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left ${
+                                  className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left first:rounded-t-2xl last:rounded-b-2xl ${
                                     selectedCountry.code === country.code ? 'bg-[#6366F1]/10' : ''
                                   }`}
                                 >
-                                  <span className="text-xl">{country.flag}</span>
+                                  <span className="text-2xl">{country.flag}</span>
                                   <span className="text-[#0F172A] font-medium">{country.name}</span>
-                                  <span className="text-[#64748B] ml-auto">{country.code}</span>
+                                  <span className="text-[#64748B] ml-auto font-medium">{country.code}</span>
                                 </button>
                               ))}
                             </div>
-                          )}
-                        </div>
+                          </>
+                        )}
+                      </div>
 
-                        {/* Phone Input */}
-                        <div className="flex-1 flex items-center">
-                          <Phone className="ml-3 w-5 h-5 text-[#64748B]" />
-                          <input
-                            type="tel"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value.replace(/[^\d\s-]/g, ''))}
-                            placeholder="Phone number"
-                            className="w-full px-3 py-4 text-[#0F172A] placeholder-[#64748B] text-lg focus:outline-none"
-                            disabled={status === 'loading'}
-                          />
-                        </div>
+                      {/* Phone Input */}
+                      <div className="flex-1 flex items-center">
+                        <Phone className="ml-4 w-5 h-5 text-[#64748B]" />
+                        <input
+                          type="tel"
+                          value={phoneNumber}
+                          onChange={(e) => setPhoneNumber(e.target.value.replace(/[^\d\s-]/g, ''))}
+                          placeholder="Enter your phone number"
+                          className="w-full px-4 py-5 text-[#0F172A] placeholder-[#94A3B8] text-lg focus:outline-none rounded-r-2xl"
+                          disabled={status === 'loading'}
+                        />
                       </div>
                     </div>
-                    <motion.button
-                      type="submit"
-                      disabled={status === 'loading'}
-                      className="px-8 py-4 rounded-xl bg-[#0F172A] text-white font-semibold hover:bg-[#1E293B] transition-colors disabled:opacity-70 flex items-center justify-center gap-2 whitespace-nowrap"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {status === 'loading' ? (
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      ) : (
-                        <>
-                          Join Waitlist
-                          <ArrowRight className="w-5 h-5" />
-                        </>
-                      )}
-                    </motion.button>
                   </div>
+                  <motion.button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="px-10 py-5 rounded-2xl bg-[#0F172A] text-white font-semibold text-lg hover:bg-[#1E293B] transition-colors disabled:opacity-70 flex items-center justify-center gap-2 whitespace-nowrap shadow-lg"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {status === 'loading' ? (
+                      <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                      <>
+                        Join Waitlist
+                        <ArrowRight className="w-5 h-5" />
+                      </>
+                    )}
+                  </motion.button>
                 </div>
                 {status === 'error' && (
                   <motion.p
