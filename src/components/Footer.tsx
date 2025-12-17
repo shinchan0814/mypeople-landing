@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Heart, Twitter, Instagram, Mail } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const footerLinks = {
   product: [
@@ -11,8 +12,9 @@ const footerLinks = {
     { label: 'Join Waitlist', href: '#waitlist' },
   ],
   legal: [
-    { label: 'Privacy Policy', href: '#' },
-    { label: 'Terms of Service', href: '#' },
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'App Usage Policy', href: '/app-policy' },
   ],
   connect: [
     { label: 'Contact Us', href: 'mailto:hello@myppl.club' },
@@ -87,9 +89,9 @@ export default function Footer() {
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-[#94A3B8] hover:text-[#A5B4FC] transition-colors">
+                  <Link href={link.href} className="text-[#94A3B8] hover:text-[#A5B4FC] transition-colors">
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -112,7 +114,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-[#64748B] text-sm">
-            © {new Date().getFullYear()} MyPeople. All rights reserved.
+            © {new Date().getFullYear()} Avighna Digital Private Limited. All rights reserved.
           </div>
           <div className="flex items-center gap-2 text-[#64748B] text-sm">
             <span>Made with</span>
