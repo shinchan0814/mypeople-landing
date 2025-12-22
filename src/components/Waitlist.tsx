@@ -23,14 +23,27 @@ const countryCodes = [
   { code: '+27', country: 'ZA', flag: '🇿🇦', name: 'South Africa' },
 ];
 
+// Generate a consistent random base between 100-200 for social proof
+const getBaseCount = () => {
+  // Use a seeded random based on the current date to keep it consistent for the day
+  const today = new Date().toDateString();
+  let hash = 0;
+  for (let i = 0; i < today.length; i++) {
+    hash = ((hash << 5) - hash) + today.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return 100 + Math.abs(hash % 101); // Returns 100-200
+};
+
 export default function Waitlist() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(countryCodes[0]);
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
-  const [waitlistCount, setWaitlistCount] = useState(0);
+  const [actualCount, setActualCount] = useState(0);
   const [displayCount, setDisplayCount] = useState(0);
+  const [targetCount, setTargetCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
 
   const counterRef = useRef(null);
@@ -39,32 +52,39 @@ export default function Waitlist() {
   useEffect(() => {
     async function fetchWaitlistCount() {
       const supabase = getSupabase();
-      if (!supabase) return;
+      const baseCount = getBaseCount();
+
+      if (!supabase) {
+        // Even without Supabase, show the base count
+        setTargetCount(baseCount);
+        return;
+      }
 
       const { count } = await supabase
         .from('waitlist')
         .select('*', { count: 'exact', head: true });
 
-      if (count !== null) {
-        setWaitlistCount(count);
-      }
+      // Add actual count to base count for social proof
+      const total = baseCount + (count || 0);
+      setActualCount(count || 0);
+      setTargetCount(total);
     }
     fetchWaitlistCount();
   }, []);
 
   // Animated counter effect
   useEffect(() => {
-    if (isCounterInView && waitlistCount > 0 && !hasAnimated) {
+    if (isCounterInView && targetCount > 0 && !hasAnimated) {
       setHasAnimated(true);
       const duration = 2000; // 2 seconds
       const steps = 60;
-      const increment = waitlistCount / steps;
+      const increment = targetCount / steps;
       let current = 0;
 
       const timer = setInterval(() => {
         current += increment;
-        if (current >= waitlistCount) {
-          setDisplayCount(waitlistCount);
+        if (current >= targetCount) {
+          setDisplayCount(targetCount);
           clearInterval(timer);
         } else {
           setDisplayCount(Math.floor(current));
@@ -73,7 +93,7 @@ export default function Waitlist() {
 
       return () => clearInterval(timer);
     }
-  }, [isCounterInView, waitlistCount, hasAnimated]);
+  }, [isCounterInView, targetCount, hasAnimated]);
 
   const validatePhoneNumber = (phone: string, countryCode: string) => {
     // Remove all non-digit characters
@@ -138,7 +158,8 @@ export default function Waitlist() {
       setStatus('success');
       setMessage("We'll notify you when we launch.");
       setPhoneNumber('');
-      setWaitlistCount((prev) => prev + 1);
+      setActualCount((prev) => prev + 1);
+      setTargetCount((prev) => prev + 1);
       setDisplayCount((prev) => prev + 1);
     } catch {
       setStatus('error');
@@ -329,10 +350,10 @@ export default function Waitlist() {
                   className="text-4xl md:text-5xl font-bold text-white"
                   key={displayCount}
                 >
-                  {displayCount > 0 ? displayCount : waitlistCount}
+                  {displayCount > 0 ? displayCount : targetCount}
                 </motion.span>
                 <span className="block text-sm text-white/70 mt-1">
-                  {waitlistCount > 0 ? 'people on the waitlist' : 'Be among the first to join'}
+                  {targetCount > 0 ? 'people on the waitlist' : 'Be among the first to join'}
                 </span>
               </div>
             </div>
