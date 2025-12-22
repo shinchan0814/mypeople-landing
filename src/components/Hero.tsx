@@ -52,7 +52,7 @@ export default function Hero() {
               transition={{ delay: 0.4 }}
               className="text-xl text-[#334155] mb-8 max-w-lg mx-auto lg:mx-0"
             >
-              A private space for meaningful connections. Share moments with the people who matter most—no followers, no likes, just real relationships.
+              A private space for people who matter the most. Share everyday moments and stay in touch. No followers, no likes, just real intentional conversations.
             </motion.p>
 
             {/* Waitlist CTA */}

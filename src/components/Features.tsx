@@ -9,7 +9,7 @@ import {
   MessageCircle,
   Lock,
   Heart,
-  Bell,
+  LayoutList,
   Sparkles,
   Shield
 } from 'lucide-react';
@@ -51,9 +51,9 @@ const features = [
     bgColor: 'bg-[#6366F1]/5',
   },
   {
-    icon: Bell,
-    title: 'Birthday Reminders',
-    description: 'Never miss an important date. We remind you about the moments that matter.',
+    icon: LayoutList,
+    title: 'Moments Feed',
+    description: 'A feed to catch up on all moments shared by your people. No filter. Just intentional sharing of life context.',
     color: 'from-[#6366F1] to-[#818CF8]',
     bgColor: 'bg-[#F7DDE2]/50',
   },

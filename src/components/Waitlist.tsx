@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
 import { Phone, CheckCircle, Users, Sparkles, ArrowRight, Heart, ChevronDown } from 'lucide-react';
 import { getSupabase } from '@/lib/supabase';
 
@@ -30,6 +30,11 @@ export default function Waitlist() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [waitlistCount, setWaitlistCount] = useState(0);
+  const [displayCount, setDisplayCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  const counterRef = useRef(null);
+  const isCounterInView = useInView(counterRef, { once: true });
 
   useEffect(() => {
     async function fetchWaitlistCount() {
@@ -47,9 +52,39 @@ export default function Waitlist() {
     fetchWaitlistCount();
   }, []);
 
-  const validatePhoneNumber = (phone: string) => {
+  // Animated counter effect
+  useEffect(() => {
+    if (isCounterInView && waitlistCount > 0 && !hasAnimated) {
+      setHasAnimated(true);
+      const duration = 2000; // 2 seconds
+      const steps = 60;
+      const increment = waitlistCount / steps;
+      let current = 0;
+
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= waitlistCount) {
+          setDisplayCount(waitlistCount);
+          clearInterval(timer);
+        } else {
+          setDisplayCount(Math.floor(current));
+        }
+      }, duration / steps);
+
+      return () => clearInterval(timer);
+    }
+  }, [isCounterInView, waitlistCount, hasAnimated]);
+
+  const validatePhoneNumber = (phone: string, countryCode: string) => {
     // Remove all non-digit characters
     const digits = phone.replace(/\D/g, '');
+
+    // India-specific validation: must be exactly 10 digits
+    if (countryCode === '+91') {
+      return digits.length === 10;
+    }
+
+    // General validation for other countries
     return digits.length >= 8 && digits.length <= 15;
   };
 
@@ -58,9 +93,13 @@ export default function Waitlist() {
 
     const cleanPhone = phoneNumber.replace(/\D/g, '');
 
-    if (!cleanPhone || !validatePhoneNumber(cleanPhone)) {
+    if (!cleanPhone || !validatePhoneNumber(cleanPhone, selectedCountry.code)) {
       setStatus('error');
-      setMessage('Please enter a valid phone number');
+      if (selectedCountry.code === '+91') {
+        setMessage('Invalid phone number. Enter 10 digits for India.');
+      } else {
+        setMessage('Please enter a valid phone number');
+      }
       return;
     }
 
@@ -97,9 +136,10 @@ export default function Waitlist() {
       }
 
       setStatus('success');
-      setMessage("You're on the list! We'll notify you when we launch.");
+      setMessage("We'll notify you when we launch.");
       setPhoneNumber('');
       setWaitlistCount((prev) => prev + 1);
+      setDisplayCount((prev) => prev + 1);
     } catch {
       setStatus('error');
       setMessage('Something went wrong. Please try again.');
@@ -153,12 +193,12 @@ export default function Waitlist() {
           </motion.div>
 
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-            Be First to Experience<br />
-            <span className="text-white/80">Meaningful Connections</span>
+            Be the first to experience<br />
+            <span className="text-white/80">My People</span>
           </h2>
 
           <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
-            We're building something special for the people who value real relationships over vanity metrics. Join the waitlist and be among the first to try MyPeople.
+            We are building something special for people who value intentional conversations over superficial sharing. Join the waitlist if you feel there has to be a better way to stay in touch.
           </p>
 
           {/* Waitlist Form */}
@@ -230,13 +270,13 @@ export default function Waitlist() {
                       </div>
 
                       {/* Phone Input */}
-                      <div className="flex-1 flex items-center">
-                        <Phone className="ml-4 w-5 h-5 text-[#64748B]" />
+                      <div className="flex-1 flex items-center min-w-0">
+                        <Phone className="ml-4 w-5 h-5 text-[#64748B] flex-shrink-0" />
                         <input
                           type="tel"
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value.replace(/[^\d\s-]/g, ''))}
-                          placeholder="Enter your phone number"
+                          placeholder="Phone number"
                           className="w-full px-4 py-5 text-[#0F172A] placeholder-[#94A3B8] text-lg focus:outline-none rounded-r-2xl"
                           disabled={status === 'loading'}
                         />
@@ -273,29 +313,28 @@ export default function Waitlist() {
             )}
           </motion.div>
 
-          {/* Social Proof */}
+          {/* Social Proof - Animated Counter */}
           <motion.div
+            ref={counterRef}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5 }}
-            className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6"
+            className="mt-12 flex flex-col items-center justify-center gap-4"
           >
-            <div className="flex -space-x-3">
-              {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-10 h-10 rounded-full border-2 border-white/50 bg-gradient-to-br ${
-                    ['from-[#F7DDE2] to-[#A5B4FC]', 'from-[#6366F1] to-[#A5B4FC]', 'from-[#A5B4FC] to-[#6366F1]', 'from-[#F7DDE2] to-[#6366F1]', 'from-[#6366F1] to-[#F7DDE2]'][i]
-                  }`}
-                />
-              ))}
-            </div>
-            <div className="flex items-center gap-2 text-white/80">
-              <Users className="w-5 h-5" />
-              <span className="font-medium">
-                {waitlistCount > 0 ? `${waitlistCount}+ people already waiting` : 'Be among the first to join'}
-              </span>
+            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-8 py-4">
+              <Users className="w-6 h-6 text-white" />
+              <div className="text-center">
+                <motion.span
+                  className="text-4xl md:text-5xl font-bold text-white"
+                  key={displayCount}
+                >
+                  {displayCount > 0 ? displayCount : waitlistCount}
+                </motion.span>
+                <span className="block text-sm text-white/70 mt-1">
+                  {waitlistCount > 0 ? 'people on the waitlist' : 'Be among the first to join'}
+                </span>
+              </div>
             </div>
           </motion.div>
 

@@ -23,8 +23,8 @@ const steps = [
   {
     number: '03',
     icon: Heart,
-    title: 'Stay Connected',
-    description: 'Chat, react, and keep the conversation going. Feel closer, always.',
+    title: 'Stay In Touch',
+    description: 'Reply, send photos and keep the conversation going. Feel closer, always.',
     color: 'from-[#F7DDE2] to-[#A5B4FC]',
   },
 ];
@@ -99,28 +99,6 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        {/* Bottom Visual */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-20 text-center"
-        >
-          <div className="inline-flex items-center gap-4 px-8 py-4 rounded-full bg-white shadow-xl border border-[#E2E8F0]">
-            <div className="flex -space-x-3">
-              {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`w-10 h-10 rounded-full border-2 border-white bg-gradient-to-br ${
-                    ['from-[#F7DDE2] to-[#A5B4FC]', 'from-[#6366F1] to-[#A5B4FC]', 'from-[#A5B4FC] to-[#6366F1]', 'from-[#F7DDE2] to-[#6366F1]', 'from-[#6366F1] to-[#F7DDE2]'][i]
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-[#0F172A] font-semibold">Join the waitlist for early access</span>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
