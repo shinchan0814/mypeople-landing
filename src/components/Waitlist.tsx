@@ -23,17 +23,8 @@ const countryCodes = [
   { code: '+27', country: 'ZA', flag: '🇿🇦', name: 'South Africa' },
 ];
 
-// Generate a consistent random base between 100-200 for social proof
-const getBaseCount = () => {
-  // Use a seeded random based on the current date to keep it consistent for the day
-  const today = new Date().toDateString();
-  let hash = 0;
-  for (let i = 0; i < today.length; i++) {
-    hash = ((hash << 5) - hash) + today.charCodeAt(i);
-    hash = hash & hash;
-  }
-  return 100 + Math.abs(hash % 101); // Returns 100-200
-};
+// Fixed base count for social proof
+const BASE_WAITLIST_COUNT = 151;
 
 export default function Waitlist() {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -52,11 +43,10 @@ export default function Waitlist() {
   useEffect(() => {
     async function fetchWaitlistCount() {
       const supabase = getSupabase();
-      const baseCount = getBaseCount();
 
       if (!supabase) {
         // Even without Supabase, show the base count
-        setTargetCount(baseCount);
+        setTargetCount(BASE_WAITLIST_COUNT);
         return;
       }
 
@@ -65,7 +55,7 @@ export default function Waitlist() {
         .select('*', { count: 'exact', head: true });
 
       // Add actual count to base count for social proof
-      const total = baseCount + (count || 0);
+      const total = BASE_WAITLIST_COUNT + (count || 0);
       setActualCount(count || 0);
       setTargetCount(total);
     }
