@@ -46,19 +46,38 @@ export default function Waitlist() {
       const supabase = getSupabase();
 
       if (!supabase) {
+        console.log('[Waitlist] Supabase not initialized, using base count');
         // Even without Supabase, show the base count
         setTargetCount(BASE_WAITLIST_COUNT);
+        setDisplayCount(BASE_WAITLIST_COUNT);
         return;
       }
 
-      const { count } = await supabase
-        .from('waitlist')
-        .select('*', { count: 'exact', head: true });
+      try {
+        const { count, error } = await supabase
+          .from('waitlist')
+          .select('*', { count: 'exact', head: true });
 
-      // Add actual count to base count for social proof
-      const total = BASE_WAITLIST_COUNT + (count || 0);
-      setActualCount(count || 0);
-      setTargetCount(total);
+        console.log('[Waitlist] Fetched count:', count, 'error:', error);
+
+        if (error) {
+          console.error('[Waitlist] Error fetching count:', error);
+          setTargetCount(BASE_WAITLIST_COUNT);
+          setDisplayCount(BASE_WAITLIST_COUNT);
+          return;
+        }
+
+        // Add actual count to base count for social proof
+        const total = BASE_WAITLIST_COUNT + (count || 0);
+        console.log('[Waitlist] Total count:', total, '(base:', BASE_WAITLIST_COUNT, '+ actual:', count, ')');
+        setActualCount(count || 0);
+        setTargetCount(total);
+        setDisplayCount(total); // Set initial display to total
+      } catch (err) {
+        console.error('[Waitlist] Exception:', err);
+        setTargetCount(BASE_WAITLIST_COUNT);
+        setDisplayCount(BASE_WAITLIST_COUNT);
+      }
     }
     fetchWaitlistCount();
   }, []);
