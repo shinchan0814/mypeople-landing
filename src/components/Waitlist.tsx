@@ -23,8 +23,8 @@ const countryCodes = [
   { code: '+27', country: 'ZA', flag: '🇿🇦', name: 'South Africa' },
 ];
 
-// Fixed base count for social proof
-const BASE_WAITLIST_COUNT = 151;
+// Fixed base count for social proof (adds to actual waitlist count)
+const BASE_WAITLIST_COUNT = 150;
 
 export default function Waitlist() {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -36,6 +36,7 @@ export default function Waitlist() {
   const [displayCount, setDisplayCount] = useState(0);
   const [targetCount, setTargetCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
+  const [userPosition, setUserPosition] = useState(0);
 
   const counterRef = useRef(null);
   const isCounterInView = useInView(counterRef, { once: true });
@@ -145,8 +146,10 @@ export default function Waitlist() {
         return;
       }
 
+      // User's position is the next number after current total
+      const position = targetCount + 1;
+      setUserPosition(position);
       setStatus('success');
-      setMessage("We'll notify you when we launch.");
       setPhoneNumber('');
       setActualCount((prev) => prev + 1);
       setTargetCount((prev) => prev + 1);
@@ -229,8 +232,8 @@ export default function Waitlist() {
                 <div className="w-16 h-16 rounded-full bg-[#10B981]/10 flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 text-[#10B981]" />
                 </div>
-                <h3 className="text-xl font-bold text-[#0F172A] mb-2">You're on the list!</h3>
-                <p className="text-[#334155]">{message}</p>
+                <h3 className="text-xl font-bold text-[#0F172A] mb-2">You're #{userPosition} on the waitlist!</h3>
+                <p className="text-[#334155]">We'll connect with you soon.</p>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
